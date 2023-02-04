@@ -5,16 +5,12 @@ const detailsPageRouteName = '/details';
 
 class YerApp extends StatelessWidget {
   const YerApp({super.key});
-
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
     return CupertinoApp(
       debugShowCheckedModeBanner: false,
       home: HomePage(),
-      routes: {
-        detailsPageRouteName: (context) => const DetailsPage(),
-      },
+      routes: {detailsPageRouteName: (context) => const DetailsPage()},
     );
   }
 }
@@ -22,24 +18,39 @@ class YerApp extends StatelessWidget {
 @immutable
 class Person {
   final String name;
-  const Person({
-    required this.name,
-  });
+  final int age;
+  const Person({required this.name, required this.age});
 }
 
-class PersonView extends StatelessWidget {
-  final Person person;
-  const PersonView({Key? key, required this.person}) : super(key: key);
+final mockPerson = Iterable.generate(
+    100, (index) => Person(name: "Person #${index + 1}", age: 10 + index));
 
+class HomePage extends StatelessWidget {
+  const HomePage({Key? key}) : super(key: key);
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Row(
-          children: [Text("Name : "), Text(person.name)],
+    return CupertinoPageScaffold(
+        navigationBar: const CupertinoNavigationBar(
+          middle: Text("Pick a person"),
         ),
-      ],
-    );
+        child: Material(
+          child: ListView.builder(
+            itemCount: mockPerson.length,
+            itemBuilder: (BuildContext context, int index) {
+              final Person person = mockPerson.elementAt(index);
+              final String age = "${person.age} years old";
+              return ListTile(
+                title: Text(person.name),
+                subtitle: Text(age),
+                trailing: const Icon(Icons.arrow_forward_ios),
+                onTap: () {
+                  Navigator.of(context)
+                      .pushNamed(detailsPageRouteName, arguments: person);
+                },
+              );
+            },
+          ),
+        ));
   }
 }
 
@@ -48,47 +59,31 @@ class DetailsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: 100,
-      width: MediaQuery.of(context).size.width,
-      decoration: const BoxDecoration(
-        color: Colors.green,
-      ),
-      child: Column(
-        children: [
-          Text("text"),
-        ],
-      ),
-    );
-  }
-}
-
-class HomePage extends StatefulWidget {
-  const HomePage({Key? key}) : super(key: key);
-
-  @override
-  State<HomePage> createState() => _HomePageState();
-}
-
-final mockPersons = Iterable.generate(
-  100,
-  (index) => Person(
-    name: 'Person #${index + 1}',
-  ),
-);
-
-class _HomePageState extends State<HomePage> {
-  int _counter = 0;
-
-  @override
-  Widget build(BuildContext context) {
+    final Person person = ModalRoute.of(context)?.settings.arguments as Person;
+    final age = "${person.age} years old";
     return Scaffold(
       body: SafeArea(
-          child: SingleChildScrollView(
         child: Column(
-          children: mockPersons.map((e) => PersonView(person: e)).toList(),
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(person.name),
+            Text(age),
+            OutlinedButton.icon(
+              icon: Icon(Icons.arrow_back_ios),
+              label: Text("Dismiss"),
+              style: OutlinedButton.styleFrom(
+                backgroundColor: Color.fromARGB(255, 9, 36, 61),
+                side: BorderSide(
+                  color: Color.fromARGB(255, 238, 196, 31),
+                ),
+              ),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
         ),
-      )),
+      ),
     );
   }
 }
