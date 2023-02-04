@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 const detailsPageRouteName = '/details';
 
@@ -30,27 +31,31 @@ class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return CupertinoPageScaffold(
-        navigationBar: const CupertinoNavigationBar(
-          middle: Text("Pick a person"),
+      navigationBar: const CupertinoNavigationBar(
+        middle: Text("Pick a person"),
+      ),
+      child: SafeArea(
+        child: Column(
+          children: [
+            CupertinoButton(
+              color: CupertinoColors.activeBlue,
+              padding: EdgeInsets.all(16),
+              onPressed: () async {
+                try {
+                  await launchUrl(
+                    Uri.parse("https://flutter.dev"),
+                  );
+                } catch (e) {
+                  print("Error launchURL");
+                }
+              },
+              child: const Text("Open"),
+            ),
+            Text("HEY")
+          ],
         ),
-        child: Material(
-          child: ListView.builder(
-            itemCount: mockPerson.length,
-            itemBuilder: (BuildContext context, int index) {
-              final Person person = mockPerson.elementAt(index);
-              final String age = "${person.age} years old";
-              return ListTile(
-                title: Text(person.name),
-                subtitle: Text(age),
-                trailing: const Icon(Icons.arrow_forward_ios),
-                onTap: () {
-                  Navigator.of(context)
-                      .pushNamed(detailsPageRouteName, arguments: person);
-                },
-              );
-            },
-          ),
-        ));
+      ),
+    );
   }
 }
 
