@@ -117,9 +117,6 @@ class CalculatorPage extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
-            SizedBox(
-              height: size.height * 0.05,
-            ),
             GetBuilder<CalculatorController>(builder: (context) {
               return resultSection(controller, size);
             }),
@@ -141,16 +138,23 @@ class CalculatorPage extends StatelessWidget {
   Expanded resultSection(CalculatorController controller, Size size) {
     return Expanded(
       child: Container(
-        color: Colors.orange,
         width: size.width,
         child: Align(
           alignment: Alignment.centerRight,
           child: Padding(
-            padding: EdgeInsets.all(8.0),
+            padding: EdgeInsets.all(16.0),
             child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.end,
               children: [
-                Text(controller.userInput),
-                Text(controller.userOutput),
+                Text(
+                  controller.userInput,
+                  style: resultTextStyle,
+                ),
+                Text(
+                  controller.userOutput,
+                  style: resultTextStyle,
+                ),
               ],
             ),
           ),
@@ -249,4 +253,10 @@ const orangeButton = BoxDecoration(
 const btnTextStyle = TextStyle(
   color: Colors.white,
   fontSize: 16,
+);
+
+const resultTextStyle = TextStyle(
+  color: Colors.black,
+  fontSize: 48,
+  decoration: TextDecoration.none,
 );

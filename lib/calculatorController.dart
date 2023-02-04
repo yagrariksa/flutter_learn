@@ -20,6 +20,7 @@ class CalculatorController extends GetxController {
     } catch (e) {
       print("EXPRESSION : ${userInputFix}");
       print(e);
+      userOutput = "Error";
     }
 
     update();
