@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_learn/yerApp.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(const YerApp());
 }
 
 class MyApp extends StatelessWidget {
@@ -11,6 +12,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       title: 'Flutter Demo',
       theme: ThemeData(
         // This is the theme of your application.
@@ -96,11 +98,16 @@ class _MyHomePageState extends State<MyHomePage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             const Text(
-              'You have pushed the button this many times:',
+              'You have clicked the button this many times:',
             ),
             Text(
               '$_counter',
               style: Theme.of(context).textTheme.headline4,
+            ),
+            Text("ALOHA"),
+            Padding(
+              padding: EdgeInsets.all(10),
+              child: Text("HHELLO"),
             ),
           ],
         ),
