@@ -12,15 +12,9 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const CupertinoApp(
+    return const MaterialApp(
+      debugShowCheckedModeBanner: false,
       title: 'Flutter Demo',
-      theme: CupertinoThemeData(
-        brightness: Brightness.light,
-        textTheme: CupertinoTextThemeData(
-          textStyle: body,
-          primaryColor: CupertinoColors.label,
-        ),
-      ),
       home: ListNotePage(),
     );
   }
