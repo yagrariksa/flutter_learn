@@ -1,134 +1,135 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:flutter_learn/calculatorController.dart';
+import 'package:get/get_state_manager/get_state_manager.dart';
+import 'package:get/instance_manager.dart';
 
-class CalculatorPage extends StatefulWidget {
-  const CalculatorPage({Key? key}) : super(key: key);
+class CalculatorPage extends StatelessWidget {
+  CalculatorPage({Key? key}) : super(key: key);
 
-  @override
-  State<CalculatorPage> createState() => _CalculatorPageState();
-}
+  final List<String> buttons = [
+    "AC",
+    "DEL",
+    "%",
+    "/",
+    "7",
+    "8",
+    "9",
+    "X",
+    "4",
+    "5",
+    "6",
+    "-",
+    "1",
+    "2",
+    "3",
+    "+",
+    "0",
+    "-",
+    "=",
+  ];
 
-class _CalculatorPageState extends State<CalculatorPage> {
-  var _display = 0;
-
-  testFun() {
-    print("HEY");
+  BoxDecoration getDecor(int row, int col) {
+    if (row == 5) {
+      if (col == 3) {
+        return orangeButton;
+      } else {
+        return blackButton;
+      }
+    } else if (col % 4 == 0) {
+      return orangeButton;
+    } else if (row == 1) {
+      return greyButton;
+    } else {
+      return blackButton;
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     var size = MediaQuery.of(context).size;
+    var controller = Get.find<CalculatorController>();
 
-    const firstRow = [
-      ButtonCalculator(
-        index: "AC",
-        decoration: greyButton,
-      ),
-      ButtonCalculator(
-        index: "DEL",
-        decoration: greyButton,
-      ),
-      ButtonCalculator(
-        index: "%",
-        decoration: greyButton,
-      ),
-      ButtonCalculator(
-        index: "/",
-        decoration: orangeButton,
-      ),
-    ];
+    btnTap(String index) {
+      switch (index) {
+        case "AC":
+          controller.clearInputAndOutput();
+          break;
+        case "DEL":
+          controller.deleteBtnAction();
+          break;
+        case "=":
+          controller.doMath();
+          break;
+        default:
+          controller.onBtnTap(index);
+      }
+    }
 
-    const secondRow = [
-      ButtonCalculator(
-        index: "7",
-        decoration: blackButton,
-      ),
-      ButtonCalculator(
-        index: "8",
-        decoration: blackButton,
-      ),
-      ButtonCalculator(
-        index: "9",
-        decoration: blackButton,
-      ),
-      ButtonCalculator(
-        index: "X",
-        decoration: orangeButton,
-      ),
-    ];
-
-    const thirdRow = [
-      ButtonCalculator(
-        index: "4",
-        decoration: blackButton,
-      ),
-      ButtonCalculator(
-        index: "5",
-        decoration: blackButton,
-      ),
-      ButtonCalculator(
-        index: "6",
-        decoration: blackButton,
-      ),
-      ButtonCalculator(
-        index: "-",
-        decoration: orangeButton,
-      ),
-    ];
-
-    const fourthRow = [
-      ButtonCalculator(
-        index: "1",
-        decoration: blackButton,
-      ),
-      ButtonCalculator(
-        index: "2",
-        decoration: blackButton,
-      ),
-      ButtonCalculator(
-        index: "3",
-        decoration: blackButton,
-      ),
-      ButtonCalculator(
-        index: "+",
-        decoration: orangeButton,
-      ),
-    ];
-
-    const lastRow = [
-      ButtonLongCalculator(
-        index: "0",
-        decoration: blackButton,
-      ),
-      ButtonCalculator(
-        index: ",",
-        decoration: blackButton,
-      ),
-      ButtonCalculator(
-        index: "=",
-        decoration: orangeButton,
-      ),
-    ];
+    List<Widget> getRow(int j) {
+      List<Widget> array = [];
+      if (j == 5) {
+        for (var i = (j * 4) - 4; i < (j * 4) - 1; i++) {
+          var item = buttons[i];
+          if (i == (j * 4) - 4) {
+            array.add(btnLongCalculator(
+              item,
+              getDecor(j, i + 1),
+              size,
+              () {
+                btnTap(item);
+              },
+            ));
+          } else {
+            array.add(btnCalculator(
+              item,
+              getDecor(j, i + 1),
+              size,
+              () {
+                btnTap(item);
+              },
+            ));
+          }
+        }
+      } else {
+        for (var i = (j * 4) - 4; i < j * 4; i++) {
+          var item = buttons[i];
+          array.add(btnCalculator(
+            item,
+            getDecor(j, i + 1),
+            size,
+            () {
+              btnTap(item);
+            },
+          ));
+        }
+      }
+      return array;
+    }
 
     return CupertinoPageScaffold(
         child: SafeArea(
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 8.0),
+        padding: const EdgeInsets.symmetric(
+          horizontal: 8.0,
+        ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
             SizedBox(
               height: size.height * 0.05,
             ),
-            ResultSection(result: "$_display"),
+            GetBuilder<CalculatorController>(builder: (context) {
+              return resultSection(controller, size);
+            }),
             Column(
-              children: const [
-                RowCalculator(innerRow: firstRow),
-                RowCalculator(innerRow: secondRow),
-                RowCalculator(innerRow: thirdRow),
-                RowCalculator(innerRow: fourthRow),
-                RowCalculator(innerRow: lastRow),
+              children: [
+                rowCalculator(getRow(1)),
+                rowCalculator(getRow(2)),
+                rowCalculator(getRow(3)),
+                rowCalculator(getRow(4)),
+                rowCalculator(getRow(5)),
               ],
             ),
           ],
@@ -136,19 +137,8 @@ class _CalculatorPageState extends State<CalculatorPage> {
       ),
     ));
   }
-}
 
-class ResultSection extends StatelessWidget {
-  final String result;
-  const ResultSection({
-    Key? key,
-    required this.result,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    var size = MediaQuery.of(context).size;
-
+  Expanded resultSection(CalculatorController controller, Size size) {
     return Expanded(
       child: Container(
         color: Colors.orange,
@@ -156,21 +146,20 @@ class ResultSection extends StatelessWidget {
         child: Align(
           alignment: Alignment.centerRight,
           child: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Text("${result}"),
+            padding: EdgeInsets.all(8.0),
+            child: Column(
+              children: [
+                Text(controller.userInput),
+                Text(controller.userOutput),
+              ],
+            ),
           ),
         ),
       ),
     );
   }
-}
 
-class RowCalculator extends StatelessWidget {
-  final innerRow;
-  const RowCalculator({Key? key, required this.innerRow}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
+  Container rowCalculator(innerRow) {
     return Container(
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 4.0),
@@ -181,65 +170,55 @@ class RowCalculator extends StatelessWidget {
       ),
     );
   }
-}
 
-class ButtonCalculator extends StatelessWidget {
-  final String index;
-  final decoration;
-  const ButtonCalculator({
-    Key? key,
-    required this.index,
-    required this.decoration,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    var size = MediaQuery.of(context).size;
-
+  Container btnCalculator(
+    String index,
+    BoxDecoration decoration,
+    Size size,
+    VoidCallback callback,
+  ) {
     return Container(
       width: size.width * 0.2,
       decoration: decoration,
-      child: Padding(
-        padding: const EdgeInsets.all(8.0),
+      child: TextButton(
+        onPressed: callback,
         child: Align(
           alignment: Alignment.center,
-          child: TextButton(
-              onPressed: () {},
-              child: Text(
-                index,
-                style: TextStyle(color: Colors.white, fontSize: 24),
-              )),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(
+              horizontal: 8.0,
+              vertical: 16.0,
+            ),
+            child: Text(
+              index,
+              style: btnTextStyle,
+            ),
+          ),
         ),
       ),
     );
   }
-}
 
-class ButtonLongCalculator extends StatelessWidget {
-  final String index;
-  final decoration;
-  const ButtonLongCalculator({
-    Key? key,
-    required this.index,
-    required this.decoration,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    var size = MediaQuery.of(context).size;
+  Container btnLongCalculator(
+    String index,
+    BoxDecoration decoration,
+    Size size,
+    VoidCallback callback,
+  ) {
     return Container(
       width: size.width * 0.45,
       decoration: decoration,
-      child: Padding(
-        padding: const EdgeInsets.all(8.0),
+      child: TextButton(
+        onPressed: () {},
         child: Align(
           alignment: Alignment.center,
-          child: TextButton(
-              onPressed: () {},
-              child: Text(
-                index,
-                style: TextStyle(color: Colors.white, fontSize: 24),
-              )),
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Text(
+              index,
+              style: btnTextStyle,
+            ),
+          ),
         ),
       ),
     );
@@ -265,4 +244,9 @@ const orangeButton = BoxDecoration(
   borderRadius: BorderRadius.all(
     Radius.circular(100),
   ),
+);
+
+const btnTextStyle = TextStyle(
+  color: Colors.white,
+  fontSize: 16,
 );
