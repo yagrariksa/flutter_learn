@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_learn/edit_note.dart';
 import 'package:flutter_learn/models/note.dart';
 import 'package:flutter_learn/utils/note_colors.dart';
 import 'package:flutter_lorem/flutter_lorem.dart';
@@ -25,15 +26,20 @@ class ListNotePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Notes"),
+        title: const Text("Notes"),
       ),
       body: const Padding(
-        padding: const EdgeInsets.only(top: 8.0),
+        padding: EdgeInsets.only(top: 8.0),
         child: ListNote(),
       ),
       floatingActionButton: FloatingActionButton(
         child: const Icon(Icons.add),
-        onPressed: () {},
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => EditNotePage(null, "add")),
+          );
+        },
       ),
     );
   }
@@ -50,16 +56,37 @@ class ListNote extends StatelessWidget {
       physics: const ScrollPhysics(),
       itemBuilder: (BuildContext context, int index) {
         var note = mockNote.elementAt(index);
-        return ListTile(
-          title: Text("${note.title}"),
-          subtitle: (note.content.length > 0)
-              ? Text(
-                  "${note.content}",
-                  textAlign: TextAlign.start,
-                )
-              : Text("None"),
-          trailing: Icon(
-            Icons.chevron_right,
+        return InkWell(
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => EditNotePage(note, "edit"),
+              ),
+            );
+          },
+          child: ListTile(
+            title: Row(
+              children: [
+                CircleAvatar(
+                  backgroundColor: Color(NoteColors[note.noteColor]!['b']!),
+                  maxRadius: 8,
+                ),
+                const SizedBox(
+                  width: 8.0,
+                ),
+                Text(note.title),
+              ],
+            ),
+            subtitle: (note.content.isNotEmpty)
+                ? Text(
+                    note.content,
+                    textAlign: TextAlign.start,
+                  )
+                : const Text("None"),
+            trailing: const Icon(
+              Icons.chevron_right,
+            ),
           ),
         );
       },
