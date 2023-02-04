@@ -40,6 +40,11 @@ class CalculatorController extends GetxController {
   }
 
   onBtnTap(String index) {
+    if (index == "0") {
+      print("HEY ENOL");
+    } else {
+      print(index);
+    }
     userInput += index;
     update();
   }

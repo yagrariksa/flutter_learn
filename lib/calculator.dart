@@ -26,7 +26,7 @@ class CalculatorPage extends StatelessWidget {
     "3",
     "+",
     "0",
-    "-",
+    ".",
     "=",
   ];
 
@@ -209,7 +209,7 @@ class CalculatorPage extends StatelessWidget {
       width: size.width * 0.45,
       decoration: decoration,
       child: TextButton(
-        onPressed: () {},
+        onPressed: callback,
         child: Align(
           alignment: Alignment.center,
           child: Padding(
