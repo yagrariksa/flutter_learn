@@ -9,11 +9,11 @@ class TodoLoader {
       "https://crudcrud.com/api/00a874fc2ffe478489a07dab3fb380fa/todos";
   late Uri urlBase = Uri.parse(urlString);
 
-  Future<MyResponse<Todo>> postData(Todo data) async {
+  Future<MyResponse<Todo>> postData(String data) async {
     var response = await _postData(data);
     var success = false;
     var body;
-    if (response.statusCode == 200) {
+    if (response.statusCode == 201) {
       var decodedResponse = jsonDecode(utf8.decode(response.bodyBytes)) as Map;
       body = Todo.fromJson(decodedResponse);
       success = true;
@@ -28,7 +28,7 @@ class TodoLoader {
     var body;
     if (response.statusCode == 200) {
       var decodedResponse =
-          jsonDecode(utf8.decode(response.bodyBytes)) as List<Map>;
+          jsonDecode(utf8.decode(response.bodyBytes)) as List<dynamic>;
       body = List<Todo>.from(decodedResponse.map((e) => Todo.fromJson(e)));
       success = true;
     }
@@ -49,7 +49,7 @@ class TodoLoader {
     return mResponse;
   }
 
-  Future<MyResponse<Todo>> updateData(Todo data) async {
+  Future<MyResponse<Todo>> updateData(String data) async {
     var response = await _updateData(data);
     var success = false;
     var body;
@@ -71,12 +71,16 @@ class TodoLoader {
     return mResponse;
   }
 
-  Future<http.Response> _postData(Todo data) async {
+  Future<http.Response> _postData(String data) async {
+    Map<String, String> headers = {
+      "Content-Type": "application/json",
+      "Accept": "*/*"
+    };
     var response = await http.post(
       urlBase,
-      body: data.toMap(),
+      body: jsonEncode(Todo(null, data, false).toMap()),
+      headers: headers,
     );
-
     return response;
   }
 
@@ -91,8 +95,8 @@ class TodoLoader {
     return response;
   }
 
-  Future<http.Response> _updateData(Todo data) async {
-    var dataMap = data.toMap();
+  Future<http.Response> _updateData(String data) async {
+    var dataMap = Todo(null, data, false).toMap();
     var uri = Uri.parse(urlString + dataMap['id']);
     var response = await http.put(
       uri,

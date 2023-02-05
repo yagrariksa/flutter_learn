@@ -1,14 +1,17 @@
 class MyResponse<T> {
   T? body;
   bool success;
-  int _responseCode;
+  int responseCode;
 
-  MyResponse(this.body, this.success, this._responseCode);
+  MyResponse(this.body, this.success, this.responseCode);
 
   String responseMessage() {
-    switch (_responseCode) {
+    switch (responseCode) {
       case 200:
-        return "Connection Success";
+        return "OK";
+        break;
+      case 201:
+        return "Success Create";
         break;
       default:
         return "Something Wrong";

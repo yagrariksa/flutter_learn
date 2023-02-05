@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_learn/connection/myResponse.dart';
 import 'package:flutter_learn/connection/todoLoader.dart';
 import 'package:flutter_learn/model/todo.dart';
 
@@ -18,12 +19,18 @@ class TodosPage extends StatefulWidget {
 
 class _TodosPageState extends State<TodosPage> {
   List<Todo> _todos = [];
+  TodoLoader loader = TodoLoader();
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    _todos = mockTodos.toList();
+    // _todos = mockTodos.toList();
+  }
+
+  Future<List<Todo>?> loadData() async {
+    MyResponse<List<Todo>> response = await loader.getData();
+    return response.body;
   }
 
   void toggleTodo(int index) {
@@ -33,9 +40,9 @@ class _TodosPageState extends State<TodosPage> {
   }
 
   void addTodo(String task) async {
-    setState(() {
-      _todos.add(Todo("${Random().nextInt(1000)}", task, false));
-    });
+    MyResponse response = await loader.postData(task);
+    print(response.responseCode);
+    setState(() {});
   }
 
   void updateTodo(String task, int index) async {
@@ -124,7 +131,25 @@ class _TodosPageState extends State<TodosPage> {
           _showDialog(null, null);
         },
       ),
-      body: SafeArea(child: TodosList(_todos, toggleTodo, _showDialog)),
+      body: FutureBuilder(
+        future: loadData(),
+        builder: (context, snapshot) {
+          if (snapshot.hasData) {
+            _todos = snapshot.data!;
+            return SafeArea(
+              child: TodosList(_todos, toggleTodo, _showDialog),
+            );
+          } else if (snapshot.hasError) {
+            return const Center(
+              child: Text("Error"),
+            );
+          } else {
+            return const Center(
+              child: Text("Loading..."),
+            );
+          }
+        },
+      ),
     );
   }
 }
