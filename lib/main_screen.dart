@@ -3,24 +3,46 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_learn/edit_note.dart';
 import 'package:flutter_learn/models/note.dart';
+import 'package:flutter_learn/models/note_database.dart';
 import 'package:flutter_learn/utils/note_colors.dart';
 import 'package:flutter_lorem/flutter_lorem.dart';
 
-final mockNote = Iterable.generate(
-  10,
-  (index) => Note(
-      id: index,
-      title: "Title #${index + 1}",
-      content: lorem(
-        paragraphs: Random().nextInt(3),
-        words: Random().nextInt(50),
-      ),
-      noteColor:
-          NoteColors.keys.elementAt(Random().nextInt(NoteColors.length))),
-);
+class ListNotePage extends StatefulWidget {
+  const ListNotePage({super.key});
 
-class ListNotePage extends StatelessWidget {
-  const ListNotePage({Key? key}) : super(key: key);
+  @override
+  State<ListNotePage> createState() => _ListNotePageState();
+}
+
+class _ListNotePageState extends State<ListNotePage> {
+  List<Map<String, dynamic>> _notesData = [];
+
+  void afterNavigate() {
+    setState(() {});
+  }
+
+  void navigate(BuildContext context, Note? note, String mode) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => EditNotePage(note, mode)),
+    ).then((value) => {afterNavigate()});
+  }
+
+  Future<List<Map<String, dynamic>>> getAllNotes() async {
+    try {
+      NoteDatabase noteDB = NoteDatabase();
+      List<Map<String, dynamic>> notes = await noteDB.all();
+      print("m:getAllNotes: GET ${notes.length} DATA");
+      return notes;
+    } catch (e) {
+      return [];
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -28,17 +50,32 @@ class ListNotePage extends StatelessWidget {
       appBar: AppBar(
         title: const Text("Notes"),
       ),
-      body: const Padding(
-        padding: EdgeInsets.only(top: 8.0),
-        child: ListNote(),
+      body: FutureBuilder(
+        future: getAllNotes(),
+        builder: (context, snapshot) {
+          if (snapshot.hasData) {
+            _notesData = snapshot.data!;
+            return Padding(
+              padding: const EdgeInsets.only(top: 8.0),
+              child: ListNote(_notesData, afterNavigate),
+            );
+          } else if (snapshot.hasError) {
+            return const Center(
+              child: Text("Error"),
+            );
+          } else {
+            return const Center(
+              child: CircularProgressIndicator(
+                backgroundColor: Color(c3),
+              ),
+            );
+          }
+        },
       ),
       floatingActionButton: FloatingActionButton(
         child: const Icon(Icons.add),
         onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => EditNotePage(null, "add")),
-          );
+          navigate(context, null, "add");
         },
       ),
     );
@@ -46,16 +83,19 @@ class ListNotePage extends StatelessWidget {
 }
 
 class ListNote extends StatelessWidget {
-  const ListNote({Key? key}) : super(key: key);
+  final List<Map<String, dynamic>> noteData;
+  final VoidCallback callbackAfterPop;
+  ListNote(this.noteData, this.callbackAfterPop);
 
   @override
   Widget build(BuildContext context) {
     return ListView.separated(
       separatorBuilder: (context, index) => Divider(),
-      itemCount: mockNote.length,
+      itemCount: noteData.length,
       physics: const ScrollPhysics(),
       itemBuilder: (BuildContext context, int index) {
-        var note = mockNote.elementAt(index);
+        var noteMap = noteData.elementAt(index);
+        var note = Note.fromJson(noteMap);
         return InkWell(
           onTap: () {
             Navigator.push(
@@ -63,7 +103,7 @@ class ListNote extends StatelessWidget {
               MaterialPageRoute(
                 builder: (context) => EditNotePage(note, "edit"),
               ),
-            );
+            ).then((value) => {callbackAfterPop()});
           },
           child: ListTile(
             title: Row(

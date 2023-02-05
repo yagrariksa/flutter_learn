@@ -32,9 +32,11 @@ class NoteDatabase {
     );
   }
 
-  Future<List<Note>> all() async {
+  Future<List<Map<String, dynamic>>> all() async {
     var db = await database();
-    return List<Note>.from(await db.query(_tableName));
+    List<Map<String, dynamic>> result = await db.query(_tableName);
+    print("success get ${result.length} data");
+    return result;
   }
 
   Future<int> insertNote(Note note) async {

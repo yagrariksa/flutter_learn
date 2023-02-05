@@ -14,10 +14,22 @@ class Note {
   Map<String, dynamic> toMap() {
     Map<String, dynamic> data = Map<String, dynamic>();
 
-    data['title'] = this.title;
-    data['content'] = this.content;
-    data['noteColor'] = this.noteColor;
+    if (this.id != null) {
+      data['id'] = id;
+    }
+    data['title'] = title;
+    data['content'] = content;
+    data['noteColor'] = noteColor;
 
     return data;
+  }
+
+  factory Note.fromJson(Map<String, dynamic> json) {
+    return Note(
+      id: json['id'],
+      title: json['title'],
+      content: json['content'],
+      noteColor: json['noteColor'],
+    );
   }
 }
