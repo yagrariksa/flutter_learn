@@ -1,13 +1,12 @@
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:flutter_learn/connection/myResponse.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_learn/model/todo.dart';
 
 class TodoLoader {
-  final String apikey = "00a874fc2ffe478489a07dab3fb380fa";
-  final String urlString = "https://crudcrud.com/api/$apikey/todos";
+  final String urlString =
+      "https://crudcrud.com/api/00a874fc2ffe478489a07dab3fb380fa/todos";
   late Uri urlBase = Uri.parse(urlString);
 
   Future<MyResponse<Todo>> postData(Todo data) async {
