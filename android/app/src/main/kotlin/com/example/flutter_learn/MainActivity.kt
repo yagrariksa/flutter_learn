@@ -1,4 +1,4 @@
-package com.example.flutter_learn
+package com.yagrariksa.flutter.clock
 
 import io.flutter.embedding.android.FlutterActivity
 
