@@ -33,10 +33,11 @@ class _TodosPageState extends State<TodosPage> {
     return response.body;
   }
 
-  void toggleTodo(int index) {
-    setState(() {
-      _todos.elementAt(index).done = !_todos.elementAt(index).done;
-    });
+  void toggleTodo(int index) async {
+    Todo todo = _todos.elementAt(index);
+    todo.done = !todo.done;
+    await loader.updateData(todo);
+    setState(() {});
   }
 
   void addTodo(String task) async {
@@ -46,15 +47,18 @@ class _TodosPageState extends State<TodosPage> {
   }
 
   void updateTodo(String task, int index) async {
-    setState(() {
-      _todos.elementAt(index).todo = task;
-    });
+    Todo todo = _todos.elementAt(index);
+    todo.todo = task;
+    MyResponse response = await loader.updateData(todo);
+    print(response.responseCode);
+    setState(() {});
   }
 
   void deleteTodo(int index) async {
-    setState(() {
-      _todos.removeAt(index);
-    });
+    Todo todo = _todos.elementAt(index);
+    MyResponse response = await loader.deleteData(todo.id());
+    print(response.responseCode);
+    setState(() {});
   }
 
   _showDialog(Todo? todo, int? index) {

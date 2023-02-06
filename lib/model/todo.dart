@@ -3,6 +3,10 @@ class Todo {
   String todo;
   bool done;
 
+  String id() {
+    return _id ?? "a";
+  }
+
   Todo(this._id, this.todo, this.done);
 
   Map<String, dynamic> toMap() {
@@ -10,12 +14,12 @@ class Todo {
 
     if (_id != null) map['id'] = _id;
     map['todo'] = todo;
-    map['done'] = done;
+    map['done'] = done ? "true" : "false";
 
     return map;
   }
 
   factory Todo.fromJson(Map<dynamic, dynamic> json) {
-    return Todo(json['id'], json['todo'], json['done']);
+    return Todo(json['_id'], json['todo'], (json['done'] == "true"));
   }
 }

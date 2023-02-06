@@ -6,8 +6,12 @@ import 'package:flutter_learn/model/todo.dart';
 
 class TodoLoader {
   final String urlString =
-      "https://crudcrud.com/api/00a874fc2ffe478489a07dab3fb380fa/todos";
+      "https://crudcrud.com/api/c3f516ca4d2f4a45b4b802581ed8420f/todos";
   late Uri urlBase = Uri.parse(urlString);
+  final Map<String, String> headers = {
+    "Content-Type": "application/json",
+    "Accept": "*/*"
+  };
 
   Future<MyResponse<Todo>> postData(String data) async {
     var response = await _postData(data);
@@ -49,8 +53,9 @@ class TodoLoader {
     return mResponse;
   }
 
-  Future<MyResponse<Todo>> updateData(String data) async {
+  Future<MyResponse<Todo>> updateData(Todo data) async {
     var response = await _updateData(data);
+    print(response.statusCode);
     var success = false;
     var body;
     if (response.statusCode == 200) {
@@ -72,10 +77,6 @@ class TodoLoader {
   }
 
   Future<http.Response> _postData(String data) async {
-    Map<String, String> headers = {
-      "Content-Type": "application/json",
-      "Accept": "*/*"
-    };
     var response = await http.post(
       urlBase,
       body: jsonEncode(Todo(null, data, false).toMap()),
@@ -95,20 +96,24 @@ class TodoLoader {
     return response;
   }
 
-  Future<http.Response> _updateData(String data) async {
-    var dataMap = Todo(null, data, false).toMap();
-    var uri = Uri.parse(urlString + dataMap['id']);
+  Future<http.Response> _updateData(Todo todo) async {
+    var dataMap = todo.toMap();
+    var uri = Uri.parse(urlString + "/" + todo.id());
     var response = await http.put(
       uri,
-      body: dataMap,
+      body: jsonEncode(dataMap),
+      headers: headers,
     );
 
     return response;
   }
 
   Future<http.Response> _deleteData(String id) async {
-    var uri = Uri.parse(urlString + id);
-    var response = await http.delete(uri);
+    var uri = Uri.parse(urlString + "/" + id);
+    var response = await http.delete(
+      uri,
+      headers: headers,
+    );
     return response;
   }
 }
