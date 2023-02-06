@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
+import 'package:flutter_learn/screen/alarm.dart';
+import 'package:flutter_learn/screen/stopwatch.dart';
+import 'package:flutter_learn/screen/timer.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -11,6 +14,12 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   int selectedIndex = 0;
+
+  final List<Widget> pages = const [
+    AlarmPage(),
+    StopwatchPage(),
+    TimerPage(),
+  ];
 
   updateIndex(int newIndex) {
     selectedIndex = newIndex;
@@ -25,20 +34,7 @@ class _HomePageState extends State<HomePage> {
       child: Scaffold(
         body: IndexedStack(
           index: selectedIndex,
-          children: [
-            Container(
-              color: Colors.red[100],
-            ),
-            Container(
-              color: Colors.green[100],
-            ),
-            Container(
-              color: Colors.blue[100],
-            ),
-            Container(
-              color: Colors.purple[100],
-            ),
-          ],
+          children: pages,
         ),
         bottomNavigationBar: BottomNavigationBar(
           currentIndex: selectedIndex,
@@ -46,27 +42,22 @@ class _HomePageState extends State<HomePage> {
           items: const [
             BottomNavigationBarItem(
               icon: Icon(
-                Icons.dashboard,
+                Icons.alarm,
               ),
-              label: "Dashboard",
+              label: "Alarm",
             ),
             BottomNavigationBarItem(
               icon: Icon(
-                Icons.list,
+                Icons.timer_outlined,
               ),
-              label: "Order",
+              label: "Stopwatch",
+              backgroundColor: Colors.blue,
             ),
             BottomNavigationBarItem(
               icon: Icon(
-                Icons.favorite,
+                Icons.av_timer_rounded,
               ),
-              label: "Favorite",
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(
-                Icons.person,
-              ),
-              label: "User",
+              label: "Timer",
             ),
           ],
         ),
