@@ -30,13 +30,19 @@ class _AlarmPageState extends State<AlarmPage> {
     var data = mockAlarm.toList();
     return Scaffold(
       appBar: AppBar(
-        title: Text("Alarm"),
+        title: const Text("Alarm"),
       ),
       floatingActionButton: FloatingActionButton(
         child: const Icon(Icons.add),
         onPressed: () {},
       ),
-      body: SafeArea(child: AlarmList(data)),
+      body: SafeArea(
+          child: Center(
+        child: TextButton(
+          onPressed: () {},
+          child: const Text("Send Notif!"),
+        ),
+      )),
     );
   }
 }
