@@ -56,15 +56,17 @@ class Alarm {
 
   factory Alarm.fromJson(Map<String, dynamic> json) {
     String _strDay = json['day'].toString();
-    _strDay = _strDay.substring(1, _strDay.length - 1);
-    List<String> _listStrDay = _strDay.split(", ");
     List<int> _listDay = [];
-    if (_listStrDay.length > 0) {
-      _listStrDay.forEach(
-        (element) {
-          _listDay.add(int.parse(element));
-        },
-      );
+    if (_strDay != "[]") {
+      _strDay = _strDay.substring(1, _strDay.length - 1);
+      List<String> _listStrDay = _strDay.split(", ");
+      if (_listStrDay.length > 0) {
+        _listStrDay.forEach(
+          (element) {
+            _listDay.add(int.parse(element));
+          },
+        );
+      }
     }
 
     String time = json['time'];
@@ -72,7 +74,7 @@ class Alarm {
     DateTime datetime = DateTime(now.year, now.month, now.day,
         int.parse(time.split(":")[0]), int.parse(time.split(":")[1]));
 
-    bool active = json['active'];
+    bool active = json['active'] == 1 ? true : false;
 
     String? name = json['name'];
 

@@ -1,9 +1,11 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_learn/helper/sqflite_helper.dart';
 import 'package:flutter_learn/model/alarm.dart';
 import 'package:flutter_learn/model/alarm_sqflite_helper.dart';
 import 'package:flutter_learn/screen/alarm_createPage.dart';
+import 'package:sqflite/sqflite.dart';
 
 final mockAlarm = Iterable.generate(
   100,
@@ -27,7 +29,8 @@ class AlarmPage extends StatefulWidget {
 
 class _AlarmPageState extends State<AlarmPage> with TickerProviderStateMixin {
   List<Map<String, dynamic>> _alarms = [];
-  late AnimationController controller;
+
+  final AlarmSqfliteHelper alarmDbHelper = AlarmSqfliteHelper();
 
   void createAlarm() {
     Navigator.push(
@@ -37,18 +40,26 @@ class _AlarmPageState extends State<AlarmPage> with TickerProviderStateMixin {
         ));
   }
 
+  void updateData(Alarm alarm) {
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => AlarmCreatePage(),
+        ));
+  }
+
+  void toggleOnOff(Alarm alarm) async {
+    alarm.toggleActive();
+    await alarmDbHelper.update(alarm);
+    setState(() {});
+  }
+
+  Future<List<Map<String, dynamic>>> loadAlarmData() async {
+    return await alarmDbHelper.loadAll();
+  }
+
   @override
   void initState() {
-    controller = AnimationController(
-      /// [AnimationController]s can be created with `vsync: this` because of
-      /// [TickerProviderStateMixin].
-      vsync: this,
-      duration: const Duration(seconds: 2),
-    )..addListener(() {
-        setState(() {});
-      });
-    controller.repeat(reverse: true);
-
     super.initState();
   }
 
@@ -64,7 +75,7 @@ class _AlarmPageState extends State<AlarmPage> with TickerProviderStateMixin {
         onPressed: createAlarm,
       ),
       body: FutureBuilder(
-        future: AlarmSqfliteHelper.loadAll(),
+        future: loadAlarmData(),
         builder: (context, snapshot) {
           return _screen(snapshot);
         },
@@ -79,7 +90,7 @@ class _AlarmPageState extends State<AlarmPage> with TickerProviderStateMixin {
       if (snapshot.data != null && _alarms.length > 0) {
         return SafeArea(
             child: Center(
-          child: AlarmList(_alarms),
+          child: AlarmList(_alarms, updateData, toggleOnOff),
         ));
       } else {
         return SafeArea(
@@ -103,9 +114,8 @@ class _AlarmPageState extends State<AlarmPage> with TickerProviderStateMixin {
         ]),
       ));
     } else {
-      return Center(
+      return const Center(
         child: CircularProgressIndicator(
-          value: controller.value,
           semanticsLabel: "Loading",
         ),
       );
@@ -115,7 +125,9 @@ class _AlarmPageState extends State<AlarmPage> with TickerProviderStateMixin {
 
 class AlarmList extends StatelessWidget {
   final List<Map<String, dynamic>> list;
-  const AlarmList(this.list, {super.key});
+  final updateData;
+  final toggleOnOff;
+  const AlarmList(this.list, this.updateData, this.toggleOnOff, {super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -125,29 +137,42 @@ class AlarmList extends StatelessWidget {
       itemBuilder: (BuildContext context, int index) {
         var _alarm = list.elementAt(index);
         var alarm = Alarm.fromJson(_alarm);
-        return Card(
-          child: ListTile(
-            title: Text(
-              alarm.tellTime(),
-              style: const TextStyle(
-                fontSize: 24,
+        return Padding(
+          padding: const EdgeInsets.only(left: 16.0, right: 16.0),
+          child: Column(children: [
+            InkWell(
+              onTap: () {
+                updateData(alarm);
+              },
+              child: Row(
+                children: [
+                  Text(
+                    alarm.tellTime(),
+                    style: const TextStyle(
+                      fontSize: 24,
+                    ),
+                  ),
+                  const Spacer(),
+                  IconButton(
+                    onPressed: () {
+                      toggleOnOff(alarm);
+                    },
+                    icon: alarm.active
+                        ? const Icon(
+                            Icons.toggle_on,
+                            color: Colors.green,
+                            size: 32,
+                          )
+                        : const Icon(
+                            Icons.toggle_off_outlined,
+                            size: 32,
+                          ),
+                  )
+                ],
               ),
             ),
-            // subtitle: (alarm.tellName == "") ? null : Text(alarm.tellName()),
-            trailing: IconButton(
-              onPressed: () {},
-              icon: alarm.active
-                  ? const Icon(
-                      Icons.toggle_on,
-                      color: Colors.green,
-                      size: 32,
-                    )
-                  : const Icon(
-                      Icons.toggle_off_outlined,
-                      size: 32,
-                    ),
-            ),
-          ),
+            const Divider(),
+          ]),
         );
       },
     );

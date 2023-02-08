@@ -17,10 +17,7 @@ class _AlarmCreatePageState extends State<AlarmCreatePage> {
   List<int> _day = [];
   late DateTime _dt;
 
-  void createAlarm() {
-    Alarm newAlarm = Alarm(_day, _dt);
-    AlarmSqfliteHelper.insert(newAlarm);
-  }
+  final AlarmSqfliteHelper alarmSqfliteHelper = AlarmSqfliteHelper();
 
   @override
   void initState() {
@@ -66,7 +63,7 @@ class _AlarmCreatePageState extends State<AlarmCreatePage> {
 
   void saveNewAlarm() async {
     Alarm alarm = Alarm(_day, _dt);
-    await AlarmSqfliteHelper.insert(alarm);
+    await alarmSqfliteHelper.insert(alarm);
     Navigator.of(context).pop();
   }
 
