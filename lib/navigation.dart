@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/framework.dart';
-import 'package:flutter/src/widgets/placeholder.dart';
-import 'package:flutter_learn/screen/alarm.dart';
+import 'package:flutter_learn/screen/alarmPage.dart';
 import 'package:flutter_learn/screen/stopwatch.dart';
 import 'package:flutter_learn/screen/timer.dart';
 

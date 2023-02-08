@@ -2,14 +2,14 @@ import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_learn/helper/notification_helper.dart';
 import 'package:flutter_learn/navigation.dart';
 import 'package:flutter_learn/screen/alarm_receive.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart'
     as notifs;
 
 Future<void> main() async {
-  String initRoute = AlaramReceivePage.routeName;
+  WidgetsFlutterBinding.ensureInitialized();
+  String initRoute = HomePage.routeName;
   final notifs.NotificationAppLaunchDetails? notificationAppLaunchDetails =
       !kIsWeb && Platform.isLinux
           ? null
@@ -34,7 +34,7 @@ String? selectedNotificationPayload;
 class MyApp extends StatelessWidget {
   MyApp({Key? key, required this.initRoute}) : super(key: key);
 
-  String initRoute = AlaramReceivePage.routeName;
+  String initRoute = HomePage.routeName;
 
   @override
   Widget build(BuildContext context) {
