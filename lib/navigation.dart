@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/framework.dart';
-import 'package:flutter/src/widgets/placeholder.dart';
-import 'package:flutter_learn/screen/alarm.dart';
+import 'package:flutter_learn/screen/alarmPage.dart';
 import 'package:flutter_learn/screen/stopwatch.dart';
 import 'package:flutter_learn/screen/timer.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
+
+  static const String routeName = "home_page";
 
   @override
   State<HomePage> createState() => _HomePageState();
